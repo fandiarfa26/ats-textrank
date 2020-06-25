@@ -6,10 +6,14 @@
         Buku Digital Berbahasa Indonesia
       </h1>
     </header>
-    <div class="column-input">
+    <div class="column-input" :class="{ avoid_clicks: inputDisable }">
       <div class="card">
-        <h4 class="card-title">Unggah Dokumen PDF</h4>
+        <h4 class="card-title">Unggah File PDF</h4>
         <div class="card-body">
+          <div class="alert-info">
+            <b>Informasi!</b>
+            File PDF yang akan diunggah, perlu dilakukan proses seleksi, sehingga hanya tersisa teks yang akan diringkas.
+          </div>
           <div class="upload-group">
             <label for="input-file-pdf" v-text="labelUpload"></label>
             <input type="file" id="input-file-pdf" ref="file" @change="previewPdf" />
@@ -17,7 +21,7 @@
           <button
             type="button"
             class="button-submit"
-            v-on:click="uploadSummarizing()"
+            @click="uploadSummarizing()"
             v-if="showBtnUpload"
           >Meringkas</button>
         </div>
@@ -42,7 +46,12 @@
               </li>
             </ul>
           </div>
-          <button type="button" class="button-submit" v-if="showBtnChoose">Meringkas</button>
+          <button
+            type="button"
+            class="button-submit"
+            @click="chooseSummarizing()"
+            v-if="showBtnChoose"
+          >Meringkas</button>
         </div>
       </div>
     </div>
@@ -51,7 +60,8 @@
         <img src="./assets/idle.svg" />
       </div>
       <div id="loading" class="output-loading" v-if="showLoading">
-        <img :src="animLoading" />
+        <img src="./assets/loading.gif" />
+        <h4>Loading...</h4>
       </div>
       <div class="card" style="margin-bottom: 30px;" v-if="showPreviewPDF">
         <h4 class="card-title title-preview">
@@ -65,11 +75,11 @@
         </h4>
         <div class="card-body" v-if="expandPreview">
           <div class="embedded-pdf">
-            <embed :src="blobPdf" type="application/pdf" width="100%" height="550px" />
+            <embed :src="blobPdf" type="application/pdf" />
           </div>
         </div>
       </div>
-      <div class="card" v-if="showResultSummary">
+      <div class="card" style="margin-bottom: 30px;" v-if="showResultSummary">
         <h4 class="card-title">
           <span>
             Hasil Rangkuman
@@ -81,7 +91,7 @@
             <div class="panel-header">
               <span id="timeResult" class="text-panel-header">Waktu: {{ time }} detik</span>
               <span class="button-panel-header">
-                <button type="button" class="button-action" id="btn-export">
+                <button type="button" class="button-action" id="btn-export" @click="exportToPdf()">
                   <span>Jadikan PDF</span>
                 </button>
               </span>
@@ -99,77 +109,17 @@
 </template>
 
 <script>
-import imageIdle from "./assets/idle.svg";
-import animLoading from "./assets/loading.gif";
+import data from "./data/books.json";
 
 export default {
   name: "app",
   data() {
     return {
-      imageIdle: imageIdle,
-      animLoading: animLoading,
-      labelUpload: "Browse File",
+      labelUpload: "Telusuri File",
       fileName: "",
       file: "",
-      books: [
-        {
-          id: "b1",
-          title: "Artificial Intelligence",
-          chapters: [
-            {
-              id: "c1",
-              title: "Pendahuluan",
-              pathfile:
-                "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-            },
-            {
-              id: "c2",
-              title: "Logic",
-              pathfile: ""
-            }
-          ],
-          expand: false
-        },
-        {
-          id: "b2",
-          title: "Algoritma & Pemrograman Dasar",
-          chapters: [
-            {
-              id: "c3",
-              title: "Pendahuluan",
-              pathfile: ""
-            },
-            {
-              id: "c4",
-              title: "Flowchart & Pseudocode",
-              pathfile: ""
-            },
-            {
-              id: "c5",
-              title: "Pengenalan Bahasa C++",
-              pathfile: ""
-            }
-          ],
-          expand: false
-        },
-        {
-          id: "b3",
-          title: "Multimedia Pembelajaran Interaktif",
-          chapters: [
-            {
-              id: "c6",
-              title: "Multimedia",
-              pathfile: ""
-            },
-            {
-              id: "c7",
-              title: "Prinsip Multimedia Pembelajaran",
-              pathfile: ""
-            }
-          ],
-          expand: false
-        }
-      ],
+      books: data.books,
+      inputDisable: false,
       showIdle: true,
       showLoading: false,
       showPreviewPDF: false,
@@ -186,24 +136,28 @@ export default {
     changeState(state) {
       switch (state) {
         case "idle":
+          this.inputDisable = false;
           this.showIdle = true;
           this.showLoading = false;
           this.showPreviewPDF = false;
           this.showResultSummary = false;
           break;
         case "loading":
+          this.inputDisable = true;
           this.showIdle = false;
           this.showLoading = true;
           this.showPreviewPDF = false;
           this.showResultSummary = false;
           break;
         case "preview":
+          this.inputDisable = false;
           this.showIdle = false;
           this.showLoading = false;
           this.showPreviewPDF = true;
           this.showResultSummary = false;
           break;
         case "result":
+          this.inputDisable = false;
           this.showIdle = false;
           this.showLoading = false;
           this.showPreviewPDF = true;
@@ -222,6 +176,7 @@ export default {
       this.changeState("preview");
     },
     chooseBook(b, ch) {
+      this.file = ch.pathfile;
       this.showBtnChoose = true;
       this.fileName = b.title + " - " + ch.title;
       this.blobPdf = ch.pathfile;
@@ -233,12 +188,42 @@ export default {
       this.showBtnUpload = false;
       this.changeState("loading");
       this.axios
-        .post("https://api-textrank.herokuapp.com/api/v1.0/summarize", formData)
+        .post("https://api-textrank.herokuapp.com/summarize", formData)
         .then(response => {
           this.changeState("result");
           this.expandPreview = false;
           this.summary = response.data.summary;
           this.time = response.data.time.toFixed(2);
+        })
+        .catch(err => console.log(err));
+    },
+    chooseSummarizing() {
+      let formData = new FormData();
+      formData.append("pathfile", this.file);
+      this.showBtnChoose = false;
+      this.changeState("loading");
+      this.axios
+        .post("https://api-textrank.herokuapp.com/summarize2", formData)
+        .then(response => {
+          this.changeState("result");
+          this.expandPreview = false;
+          this.summary = response.data.summary;
+          this.time = response.data.time.toFixed(2);
+        })
+        .catch(err => console.log(err));
+    },
+    exportToPdf() {
+      let formData = new FormData();
+      formData.append("summary", this.summary.join(" "));
+      this.axios
+        .post("https://api-textrank.herokuapp.com/export_file", formData)
+        .then(response => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "summary.pdf");
+          document.body.appendChild(link);
+          link.click();
         })
         .catch(err => console.log(err));
     }
@@ -263,13 +248,14 @@ body {
 
 .container {
   margin: 0 auto;
-  width: 80%;
+  width: 95%;
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 100px 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: 100px minmax(200px, auto) 1fr;
   grid-template-areas:
-    "header header"
-    "col-in col-out";
+    "header"
+    "col-out"
+    "col-in";
   column-gap: 30px;
 }
 
@@ -280,9 +266,18 @@ body {
   align-items: center;
 }
 
+.header h1 {
+  font-size: 1.2em;
+  text-align: center;
+}
+
 .column-input {
   grid-area: col-in;
   margin-bottom: 30px;
+}
+
+.avoid_clicks > * {
+  pointer-events: none;
 }
 
 .column-output {
@@ -292,9 +287,10 @@ body {
 .output-idle,
 .output-loading {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 630px;
+  margin-bottom: 30px;
 }
 
 .output-idle img {
@@ -311,6 +307,8 @@ body {
 .card-title {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+  font-size: 0.8em;
 }
 
 .filename {
@@ -326,6 +324,15 @@ body {
   margin-top: 10px;
 }
 
+.alert-info {
+  background-color: rgba(72, 219, 251, 0.3);
+  border: 2px solid rgba(72, 219, 251, 1);
+  border-radius: 10px;
+  font-size: 0.8em;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+}
+
 .upload-group {
   display: flex;
   justify-content: center;
@@ -335,10 +342,11 @@ body {
   border: 2px dashed #8395a7;
   border-radius: 15px;
   margin-bottom: 5px;
+  padding: 15px;
 }
 
 .upload-group label {
-  font-size: 16px;
+  font-size: 0.8em;
   font-weight: bold;
   color: #8395a7;
   cursor: pointer;
@@ -455,6 +463,8 @@ body {
 
 .embedded-pdf embed {
   border-radius: 15px;
+  width: 100%;
+  height: 400px;
 }
 
 .panel {
@@ -506,5 +516,43 @@ body {
 .panel-body li {
   list-style: none;
   padding: 10px 0;
+}
+
+#summaryResult li {
+  font-size: 0.8em;
+}
+
+@media screen and (min-width: 768px) {
+  .container {
+    width: 80%;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 100px 1fr;
+    grid-template-areas:
+      "header header"
+      "col-in col-out";
+  }
+
+  .header h1 {
+    font-size: 1.8em;
+    text-align: left;
+  }
+
+  .card-title {
+    flex-direction: row;
+    font-size: 1em;
+  }
+
+  .upload-group label {
+    font-size: 1em;
+  }
+
+  .output-idle,
+  .output-loading {
+    height: 550px;
+  }
+
+  .embedded-pdf embed {
+    height: 550px;
+  }
 }
 </style>

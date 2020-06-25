@@ -1,0 +1,56 @@
+{
+    "books": [{
+            "id": "b1",
+            "title": "Artificial Intelligence",
+            "chapters": [{
+                    "id": "c1",
+                    "title": "Pendahuluan",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/kecerdasan_buatan/ch1_ai.pdf"
+                },
+                {
+                    "id": "c2",
+                    "title": "Logic",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/kecerdasan_buatan/ch2_ai.pdf"
+                }
+            ],
+            "expand": false
+        },
+        {
+            "id": "b2",
+            "title": "Algoritma & Pemrograman Dasar",
+            "chapters": [{
+                    "id": "c3",
+                    "title": "Pendahuluan",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch1_algoritma.pdf"
+                },
+                {
+                    "id": "c4",
+                    "title": "Flowchart & Pseudocode",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch2_algoritma.pdf"
+                },
+                {
+                    "id": "c5",
+                    "title": "Pengenalan Bahasa C++",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch3_algoritma.pdf"
+                }
+            ],
+            "expand": false
+        },
+        {
+            "id": "b3",
+            "title": "Multimedia Pembelajaran Interaktif",
+            "chapters": [{
+                    "id": "c6",
+                    "title": "Multimedia",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/multimedia/ch1-mpi.pdf"
+                },
+                {
+                    "id": "c7",
+                    "title": "Prinsip Multimedia Pembelajaran",
+                    "pathfile": "https://api-textrank.herokuapp.com/pdf/multimedia/ch2-mpi.pdf"
+                }
+            ],
+            "expand": false
+        }
+    ]
+}
