@@ -1,56 +1,74 @@
 {
-    "books": [{
-            "id": "b1",
-            "title": "Artificial Intelligence",
-            "chapters": [{
-                    "id": "c1",
-                    "title": "Pendahuluan",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/kecerdasan_buatan/ch1_ai.pdf"
-                },
-                {
-                    "id": "c2",
-                    "title": "Logic",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/kecerdasan_buatan/ch2_ai.pdf"
-                }
-            ],
-            "expand": false
-        },
-        {
-            "id": "b2",
-            "title": "Algoritma & Pemrograman Dasar",
-            "chapters": [{
-                    "id": "c3",
-                    "title": "Pendahuluan",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch1_algoritma.pdf"
-                },
-                {
-                    "id": "c4",
-                    "title": "Flowchart & Pseudocode",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch2_algoritma.pdf"
-                },
-                {
-                    "id": "c5",
-                    "title": "Pengenalan Bahasa C++",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/algoritma_dasar/ch3_algoritma.pdf"
-                }
-            ],
-            "expand": false
-        },
-        {
-            "id": "b3",
-            "title": "Multimedia Pembelajaran Interaktif",
-            "chapters": [{
-                    "id": "c6",
-                    "title": "Multimedia",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/multimedia/ch1-mpi.pdf"
-                },
-                {
-                    "id": "c7",
-                    "title": "Prinsip Multimedia Pembelajaran",
-                    "pathfile": "https://api-textrank.herokuapp.com/pdf/multimedia/ch2-mpi.pdf"
-                }
-            ],
-            "expand": false
-        }
-    ]
+  "books": [
+    {
+      "id": "jv5vbwhteg",
+      "title": "Creativity Talkless Media untuk Meningkatkan Kemampuan Visual Komunikasi di Lingkungan Sekolah Autis Laboratorium UM",
+      "author": "Muhammad Ashar, Yudi Tri Harsono, Ivan Reynaldi Putra",
+      "pathfile": "http://127.0.0.1:5000/pdf/talkless/talkless_1.pdf",
+      "expand": false
+    },
+    {
+      "id": "kduid79io2",
+      "title": "Implementasi Metode Dempster-Shafer dalam Diagnosa Penyakit pada Tanaman Cabai Merah Keriting",
+      "author": "Agusta Rakhmat Taufani, Harits Ar Rosyid, Khoirudin Asfani",
+      "pathfile": "http://127.0.0.1:5000/pdf/cabai/cabai_1.pdf",
+      "expand": false
+    },
+    {
+      "id": "llqbplxmk9",
+      "title": "Implementasi Gerakan Literasi Sekolah pada Pembelajaran Tematik di Sekolah Dasar",
+      "author": "Suyono, Titik Harsiati, Ika Sari Wulandari",
+      "pathfile": "http://127.0.0.1:5000/pdf/literasi/literasi_1.pdf",
+      "expand": false
+    },
+    {
+      "id": "yjk056m0j9",
+      "title": "Analisis Perilaku Masyarakat Indonesia dalam Menghadapi Pandemi Virus Corona (Covid-19) dan Kiat Menjaga Kesejahteraan Jiwa",
+      "author": "Dana Riksa Buana",
+      "pathfile": "http://127.0.0.1:5000/pdf/covid19/covid19.pdf",
+      "expand": false
+    },
+    {
+      "id": "kai1ztfyos",
+      "title": "Implementasi MOOCs di Pendidikan Ilmu Perpustakaan dan Informasi (Sebuah Peluang dan Tantangan di Indonesia)",
+      "author": "Jazimatul Husna",
+      "pathfile": "http://127.0.0.1:5000/pdf/moocs/moocs.pdf",
+      "expand": false
+    },
+    {
+      "id": "v344gac1v7",
+      "title": "Model Kesejahteraan Psikologis Mahasiswa Indonesia dan Malaysia",
+      "author": "Nur Eva, Nur Hidayah, Pravissi Shanti",
+      "pathfile": "http://127.0.0.1:5000/pdf/psikologis/psikologis.pdf",
+      "expand": false
+    },
+    {
+      "id": "59ukqy42g3",
+      "title": "Peran Inkubator Bisnis dalam Membangun Startup pada Perguruan Tinggi",
+      "author": "Ninda Lutfiani, Untung Rahardja, Ita Sari Perbina Manik",
+      "pathfile": "http://127.0.0.1:5000/pdf/startup/startup.pdf",
+      "expand": false
+    },
+    {
+      "id": "hq15r5ve6c",
+      "title": "Perancangan UI/UX menggunakan Pendekatan HCD (Human-Centered design) pada Website Thriftdoor",
+      "author": "Arief Ramadhan Setiadi, Hari Setiaji",
+      "pathfile": "http://127.0.0.1:5000/pdf/ui_ux/ui_ux.pdf",
+      "expand": false
+    },
+    {
+      "id": "xvg237re0k",
+      "title": "Trend Youtuber di Generasi Millenial dalam Pengembangan Kreativitas",
+      "author": "Tuty Mutiah",
+      "pathfile": "http://127.0.0.1:5000/pdf/youtuber/youtuber.pdf",
+      "expand": false
+    },
+    {
+      "id": "dsdu4a99lo",
+      "title": "Bahasa Sastra Lisan Modern Televisi Stand Up Comedy: Kajian Budaya Populer",
+      "author": "Aziizatul Khusniyah",
+      "pathfile": "http://127.0.0.1:5000/pdf/comedy/comedy.pdf",
+      "expand": false
+    }
+  ]
 }

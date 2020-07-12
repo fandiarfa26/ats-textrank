@@ -8,50 +8,35 @@
     </header>
     <div class="column-input" :class="{ avoid_clicks: inputDisable }">
       <div class="card">
-        <h4 class="card-title">Unggah File PDF</h4>
+        <h4 class="card-title">Pilih contoh buku berikut:</h4>
         <div class="card-body">
-          <div class="alert-info">
-            <b>Informasi!</b>
-            File PDF yang akan diunggah, perlu dilakukan proses seleksi, sehingga hanya tersisa teks yang akan diringkas.
-          </div>
-          <div class="upload-group">
-            <label for="input-file-pdf" v-text="labelUpload"></label>
-            <input type="file" id="input-file-pdf" ref="file" @change="previewPdf" />
-          </div>
-          <button
-            type="button"
-            class="button-submit"
-            @click="uploadSummarizing()"
-            v-if="showBtnUpload"
-          >Meringkas</button>
+          <ul class="list-books">
+            <li v-for="book in books" v-bind:key="book.id">
+              <input type="radio" :id="book.id" name="choose" @click="chooseBook(book)" />
+              <label :for="book.id">{{ book.title }}</label>
+            </li>
+          </ul>
         </div>
       </div>
       <div class="separator">atau</div>
       <div class="card">
-        <h4 class="card-title">Pilih Buku</h4>
+        <h4 class="card-title">Unggah File PDF</h4>
         <div class="card-body">
-          <div class="accordion" v-for="book in books" v-bind:key="book.id">
-            <div class="accordion-button" @click="book.expand = !book.expand">
-              <h5>{{ book.title }}</h5>
-            </div>
-            <ul class="accordion-panel list-chapters" v-if="book.expand">
-              <li v-for="chapter in book.chapters" v-bind:key="chapter.id">
-                <input
-                  type="radio"
-                  :id="chapter.id"
-                  name="choose"
-                  @click="chooseBook(book, chapter)"
-                />
-                <label :for="chapter.id">{{ chapter.title }}</label>
-              </li>
-            </ul>
+          <div class="alert-info">
+            <b>Informasi!</b>
+            File PDF yang akan diunggah, perlu dilakukan proses seleksi,
+            sehingga hanya tersisa teks yang akan diringkas.
           </div>
-          <button
-            type="button"
-            class="button-submit"
-            @click="chooseSummarizing()"
-            v-if="showBtnChoose"
-          >Meringkas</button>
+          <div class="upload-group">
+            <label for="input-file-pdf" v-text="labelUpload"></label>
+            <input
+              type="file"
+              id="input-file-pdf"
+              ref="file"
+              accept="application/pdf"
+              @change="previewPdf"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -74,15 +59,32 @@
           </a>
         </h4>
         <div class="card-body" v-if="expandPreview">
+          <div class="alert-not-support">
+            <b>Maaf!</b>
+            Pratinjau PDF belum support di versi mobile.
+          </div>
           <div class="embedded-pdf">
             <embed :src="blobPdf" type="application/pdf" />
           </div>
+          <div class="author" v-if="author !== ''">{{ author }}</div>
+          <button
+            type="button"
+            class="button-submit"
+            @click="uploadSummarizing()"
+            v-if="showBtnUpload"
+          >Meringkas</button>
+          <button
+            type="button"
+            class="button-submit"
+            @click="chooseSummarizing()"
+            v-if="showBtnChoose"
+          >Meringkas</button>
         </div>
       </div>
       <div class="card" style="margin-bottom: 30px;" v-if="showResultSummary">
         <h4 class="card-title">
           <span>
-            Hasil Rangkuman
+            Hasil Ringkasan
             <span class="filename">{{ fileName }}</span>
           </span>
         </h4>
@@ -90,16 +92,16 @@
           <div class="panel">
             <div class="panel-header">
               <span id="timeResult" class="text-panel-header">Waktu: {{ time }} detik</span>
-              <span class="button-panel-header">
+              <!-- <span class="button-panel-header">
                 <button type="button" class="button-action" id="btn-export" @click="exportToPdf()">
                   <span>Jadikan PDF</span>
                 </button>
-              </span>
+              </span>-->
             </div>
             <div class="panel-body">
-              <ul id="summaryResult">
+              <ol id="summaryResult">
                 <li v-for="sentence in summary" :key="sentence">{{ sentence }}</li>
-              </ul>
+              </ol>
             </div>
           </div>
         </div>
@@ -118,6 +120,7 @@ export default {
       labelUpload: "Telusuri File",
       fileName: "",
       file: "",
+      author: "",
       books: data.books,
       inputDisable: false,
       showIdle: true,
@@ -141,6 +144,8 @@ export default {
           this.showLoading = false;
           this.showPreviewPDF = false;
           this.showResultSummary = false;
+          this.showBtnUpload = false;
+          this.showBtnChoose = false;
           break;
         case "loading":
           this.inputDisable = true;
@@ -148,13 +153,18 @@ export default {
           this.showLoading = true;
           this.showPreviewPDF = false;
           this.showResultSummary = false;
+          this.showBtnUpload = false;
+          this.showBtnChoose = false;
           break;
         case "preview":
           this.inputDisable = false;
           this.showIdle = false;
           this.showLoading = false;
           this.showPreviewPDF = true;
+          this.expandPreview = true;
           this.showResultSummary = false;
+          this.showBtnUpload = false;
+          this.showBtnChoose = false;
           break;
         case "result":
           this.inputDisable = false;
@@ -162,6 +172,8 @@ export default {
           this.showLoading = false;
           this.showPreviewPDF = true;
           this.showResultSummary = true;
+          this.showBtnUpload = false;
+          this.showBtnChoose = false;
           break;
         default:
           break;
@@ -171,16 +183,18 @@ export default {
       this.file = event.target.files[0];
       this.labelUpload = this.file.name;
       this.fileName = this.file.name;
+      this.author = "";
       this.blobPdf = URL.createObjectURL(this.file);
+      this.changeState("preview");
       this.showBtnUpload = true;
-      this.changeState("preview");
     },
-    chooseBook(b, ch) {
-      this.file = ch.pathfile;
-      this.showBtnChoose = true;
-      this.fileName = b.title + " - " + ch.title;
-      this.blobPdf = ch.pathfile;
+    chooseBook(b) {
+      this.file = b.pathfile;
+      this.fileName = b.title;
+      this.author = "Penulis: " + b.author;
+      this.blobPdf = b.pathfile;
       this.changeState("preview");
+      this.showBtnChoose = true;
     },
     uploadSummarizing() {
       let formData = new FormData();
@@ -188,7 +202,7 @@ export default {
       this.showBtnUpload = false;
       this.changeState("loading");
       this.axios
-        .post("https://api-textrank.herokuapp.com/summarize", formData)
+        .post("http://127.0.0.1:5000/summarize", formData)
         .then(response => {
           this.changeState("result");
           this.expandPreview = false;
@@ -203,7 +217,7 @@ export default {
       this.showBtnChoose = false;
       this.changeState("loading");
       this.axios
-        .post("https://api-textrank.herokuapp.com/summarize2", formData)
+        .post("http://127.0.0.1:5000/summarize2", formData)
         .then(response => {
           this.changeState("result");
           this.expandPreview = false;
@@ -211,22 +225,22 @@ export default {
           this.time = response.data.time.toFixed(2);
         })
         .catch(err => console.log(err));
-    },
-    exportToPdf() {
-      let formData = new FormData();
-      formData.append("summary", this.summary.join(" "));
-      this.axios
-        .post("https://api-textrank.herokuapp.com/export_file", formData)
-        .then(response => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "summary.pdf");
-          document.body.appendChild(link);
-          link.click();
-        })
-        .catch(err => console.log(err));
     }
+    // exportToPdf() {
+    //   let formData = new FormData();
+    //   formData.append("summary", this.summary.join(" "));
+    //   this.axios
+    //     .post("http://127.0.0.1:5000/export_file", formData)
+    //     .then(response => {
+    //       const url = window.URL.createObjectURL(new Blob([response.data]));
+    //       const link = document.createElement("a");
+    //       link.href = url;
+    //       link.setAttribute("download", "summary.pdf");
+    //       document.body.appendChild(link);
+    //       link.click();
+    //     })
+    //     .catch(err => console.log(err));
+    // }
   }
 };
 </script>
@@ -324,13 +338,22 @@ body {
   margin-top: 10px;
 }
 
-.alert-info {
-  background-color: rgba(72, 219, 251, 0.3);
-  border: 2px solid rgba(72, 219, 251, 1);
+.alert-info,
+.alert-not-support {
   border-radius: 10px;
   font-size: 0.8em;
   padding: 5px 10px;
   margin-bottom: 5px;
+}
+
+.alert-info {
+  background-color: rgba(72, 219, 251, 0.3);
+  border: 2px solid rgba(72, 219, 251, 1);
+}
+
+.alert-not-support {
+  background-color: rgba(254, 202, 87, 0.3);
+  border: 2px solid rgba(254, 202, 87, 1);
 }
 
 .upload-group {
@@ -403,43 +426,17 @@ body {
   margin-left: 0.25em;
 }
 
-.accordion {
-  min-height: 40px;
-  padding: 10px 15px;
-  background-color: rgba(200, 214, 229, 50%);
-  border: 2px solid #8395a7;
-  border-radius: 10px;
-  margin-bottom: 5px;
-}
-
-.accordion-button {
-  cursor: pointer;
-  border-bottom: 2px solid rgba(200, 214, 229, 0%);
-}
-
-.accordion-button:hover {
-  border-bottom: 2px solid #8395a7;
-}
-
-.accordion-button h5 {
-  font-size: 14px;
-}
-
-.accordion-panel {
-  margin-top: 10px;
-}
-
-.list-chapters li {
+.list-books li {
   list-style: none;
 }
 
-.list-chapters input[type="radio"] {
+.list-books input[type="radio"] {
   opacity: 0;
   position: fixed;
   width: 0;
 }
 
-.list-chapters label {
+.list-books label {
   display: block;
   background-color: rgba(200, 214, 229, 0.5);
   border: 2px solid rgba(200, 214, 229, 0.5);
@@ -451,20 +448,27 @@ body {
   margin-bottom: 5px;
 }
 
-.list-chapters input[type="radio"]:checked + label {
+.list-books input[type="radio"]:checked + label {
   background-color: #1dd1a1;
   border: 2px solid #10ac84;
   color: white;
 }
 
-.list-chapters label:hover {
+.list-books label:hover {
   background-color: rgba(200, 214, 229, 0.8);
 }
 
 .embedded-pdf embed {
   border-radius: 15px;
   width: 100%;
-  height: 400px;
+  height: 150px;
+}
+
+.author {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .panel {
@@ -514,7 +518,6 @@ body {
 }
 
 .panel-body li {
-  list-style: none;
   padding: 10px 0;
 }
 
@@ -522,6 +525,7 @@ body {
   font-size: 0.8em;
 }
 
+/* for desktop */
 @media screen and (min-width: 768px) {
   .container {
     width: 80%;
@@ -549,6 +553,10 @@ body {
   .output-idle,
   .output-loading {
     height: 550px;
+  }
+
+  .alert-not-support {
+    display: none;
   }
 
   .embedded-pdf embed {
