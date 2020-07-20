@@ -10,7 +10,13 @@
       <div class="card">
         <h4 class="card-title">Pilih contoh buku berikut:</h4>
         <div class="card-body">
-          <ul class="list-books">
+          <div
+            class="select-books"
+            title="Pilih Buku"
+            @click="showBooks = !showBooks"
+            v-text="choosedBook"
+          ></div>
+          <ul class="list-books" v-if="showBooks">
             <li v-for="book in books" v-bind:key="book.id">
               <input type="radio" :id="book.id" name="choose" @click="chooseBook(book)" />
               <label :for="book.id">{{ book.title }}</label>
@@ -89,20 +95,46 @@
           </span>
         </h4>
         <div class="card-body">
-          <div class="panel">
+          <div class="panel" id="panel-text" v-if="showPanelText">
             <div class="panel-header">
               <span id="timeResult" class="text-panel-header">Waktu: {{ time }} detik</span>
-              <!-- <span class="button-panel-header">
-                <button type="button" class="button-action" id="btn-export" @click="exportToPdf()">
+              <span class="button-panel-header">
+                <!-- <button type="button" class="button-action" id="btn-export" @click="exportToPdf()">
                   <span>Jadikan PDF</span>
+                </button>-->
+                <button
+                  type="button"
+                  class="button-action"
+                  id="btn-to-explain"
+                  @click="showPanelText=false;showPanelExplain=true"
+                >
+                  <span>Illustrasi</span>
                 </button>
-              </span>-->
+              </span>
             </div>
             <div class="panel-body">
               <ol id="summaryResult">
                 <li v-for="sentence in summary" :key="sentence">{{ sentence }}</li>
               </ol>
             </div>
+          </div>
+          <div class="panel" id="panel-explain" v-if="showPanelExplain">
+            <div class="panel-header">
+              <span class="text-panel-header">Penjelasan</span>
+              <span class="button-panel-header">
+                <button
+                  type="button"
+                  class="button-action"
+                  id="btn-to-text"
+                  @click="showPanelText=true;showPanelExplain=false"
+                >
+                  <span>Kembali</span>
+                </button>
+              </span>
+            </div>
+            <div
+              class="panel-body"
+            >Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic distinctio, earum ducimus minima sint libero quia nobis. Fugiat, provident quos nulla accusamus doloribus molestiae porro suscipit voluptatem, quisquam tenetur labore!</div>
           </div>
         </div>
       </div>
@@ -118,6 +150,7 @@ export default {
   data() {
     return {
       labelUpload: "Telusuri File",
+      choosedBook: "-- Pilih Buku --",
       fileName: "",
       file: "",
       author: "",
@@ -127,9 +160,12 @@ export default {
       showLoading: false,
       showPreviewPDF: false,
       showResultSummary: false,
+      showBooks: false,
       expandPreview: true,
       showBtnUpload: false,
       showBtnChoose: false,
+      showPanelText: true,
+      showPanelExplain: false,
       blobPdf: null,
       summary: [],
       time: null
@@ -191,9 +227,11 @@ export default {
     chooseBook(b) {
       this.file = b.pathfile;
       this.fileName = b.title;
+      this.choosedBook = b.title;
       this.author = "Penulis: " + b.author;
       this.blobPdf = b.pathfile;
       this.changeState("preview");
+      this.showBooks = false;
       this.showBtnChoose = true;
     },
     uploadSummarizing() {
@@ -436,6 +474,7 @@ body {
   width: 0;
 }
 
+.select-books,
 .list-books label {
   display: block;
   background-color: rgba(200, 214, 229, 0.5);
@@ -448,6 +487,7 @@ body {
   margin-bottom: 5px;
 }
 
+.select-books,
 .list-books input[type="radio"]:checked + label {
   background-color: #1dd1a1;
   border: 2px solid #10ac84;
